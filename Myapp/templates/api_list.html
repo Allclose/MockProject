@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>接口测试列表</title>
+    <link rel="shortcut icon" href="/static/fv.ico">
+    <link rel="stylesheet" href="/static/lightbox/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/lightbox/node_modules/prismjs/themes/prism-tomorrow.css"/>
+</head>
+<body>
+{% include 'menu.html' %}
+    <table class="table table-striped table-bordered " style="width: 80%;margin-left: 10%;text-align: center;">
+    <thead style="background-color: black;color: white">
+        <tr>
+            <th>ID</th>
+            <th>接口名称</th>
+            <th>url</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for api in apis %}
+            <tr>
+                <td>{{ api.id }}</td>
+                <td>{{ api.name }}</td>
+                <td>{{ api.url }}</td>
+                <td>
+                    <button onclick="run({{ api.id }})">运行</button>
+                    <button onclick="set_api({{api.id}})">设置</button>
+                    <button onclick="del_api('{{ api.id }}')">删除</button>
+                    <a href="/show_report/{{ api.id }}/" target="_blank" style="color: black"><button>查看报告</button></a>
+                    <button onclick="add_cases('{{ api.id }}')">添加用例</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# 新增接口 #}
+<script src="/static/lightbox/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/lightbox/js/bootstrap-show-modal.js"></script>
+<script src="/static/lightbox/node_modules/prismjs/prism.js"></script>
+<script>
+    {# 新增接口 #}
+    function add_api(){
+        $.showModal({
+            title: '新增接口',
+            body:
+                '<form><div class="form-group row" >' +
+                '<div class="col-3"><label for="text" class="col-form-label">接口名称</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" id="api_name"></div>' + '</div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">方法</label></div>' +
+                '<div class="col-9"><select name="" id="api_method"><option value="get">GET</option><option value="post">POST</option></select></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Url</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_url"></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Body</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_body"></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">断言</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_check"></div></div></form>',
+            footer: '<button type="button" class="btn btn-link" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">保存</button>',
+            onCreate: function (modal) {
+                // create event handler for form submit and handle values
+                $(modal.element).on("click", "button[type='submit']", function (event) {
+                    event.preventDefault()
+                    var $form = $(modal.element).find("form")
+                    $.post(
+                        '/add_api/',
+                        {
+                            'name': $form.find('#api_name').val(),
+                            'method': $form.find('#api_method').val(),
+                            'url': $form.find('#api_url').val(),
+                            'body': $form.find('#api_body').val(),
+                            'check': $form.find('#api_check').val(),
+                        },
+                        function (ret){
+                            modal.hide()
+                            document.location.reload()
+                        }
+                    )
+                })
+            }
+        })
+    }
+    {# 接口设置 #}
+    function set_api(api_id){
+        $.get(
+            '/get_api/',
+            {"api_id":api_id},
+            function (ret){
+                $.showModal({
+                    title:'修改接口',
+                    body:
+                '<form>'+
+                        '<div class="form-group row" >' +
+                '<div class="col-3"><label for="text" class="col-form-label">接口名称</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" id="api_name" value="'+ret.name+'" /></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">方法</label></div>' +
+                '<div class="col-9"><select name="" id="api_method"  value="'+ret.method+'" /><option value="get">GET</option><option value="post">POST</option></select></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Url</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_url" value="'+ret.url+'" /></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Body</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_body" value="'+ret.body+'" /></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">断言</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="api_check" value="'+ret.check+'" /></div></div></form>',
+            footer: '<button type="button" class="btn btn-link" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">保存</button>',
+            onCreate: function (model){
+                        $(model.element).on("click", "button[type='submit']", function (event) {
+                    event.preventDefault()
+                // create event handler for form submit and handle values
+                    var $form = $(model.element).find("form")
+                    $.post(
+                        '/set_api/',
+                        {
+                            'api_id':api_id,
+                            'name': $form.find('#api_name').val(),
+                            'method': $form.find('#api_method').val(),
+                            'url': $form.find('#api_url').val(),
+                            'body': $form.find('#api_body').val(),
+                            'check': $form.find('#api_check').val(),
+                        },
+                        function (ret){
+                            model.hide()
+                            document.location.reload()
+                        }
+                    )
+            })
+                    }
+                })
+            }
+        )
+    }
+    {# 删除接口 #}
+    function del_api(api_id){
+            $.get(
+                '/del_api/'+api_id+'/',
+                    {},
+                    function (ret){
+                    document.location.reload()
+                    }
+            )
+    }
+</script>
+
+<div id="case_div" style="display: none;border-radius: 4px;top: 100px;width: 40%;margin-right: 30%;">
+    <form class="" action="/add_case/{{ api.id }}" method="post" enctype="multipart/form-data" >
+        {% csrf_token %}
+        上传用例：<input type="file" name="excel_data">
+        <p></p>
+        <input type="submit" class="btn btn-default" value="上传">
+    </form>
+</div>
+{# 操作 #}
+<script>
+    {# 运行测试 #}
+    function run(api_id){
+        $.get(
+            '/run/'+api_id+'/',
+            {},
+            function (ret){
+                document.location.reload()
+            }
+        )
+    }
+    {# 上传读取用例文件 #}
+    function add_cases(api_id){
+            var api_id = api_id
+                $.showModal({
+            title: '更新用例',
+            body:
+                '<form class="" id="add_case_div" action="/add_case/'+api_id+'/" method="post" enctype="multipart/form-data">'+
+                '{% csrf_token %}'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">上传用例</label></div>' +
+                '<div class="col-9"><input type="file" class="form-control" id="excel_data" value="" name="excel_data"></div>' + '</div>'+
+                '<button type="button" class="btn btn-link" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">保存</button>'+
+                '</form>'
+                })}
+</script>
+
+</body>
+</html>

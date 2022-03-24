@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目列表</title>
+    <link rel="shortcut icon" href="/static/fv.ico">
+        {# 项目数据 #}
+    <link rel="stylesheet" href="/static/lightbox/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/lightbox/node_modules/prismjs/themes/prism-tomorrow.css"/>
+    <style>
+        th{text-align: center;}
+        td{text-align: center;}
+    </style>
+</head>
+<body>
+{% include 'menu.html'  %}
+<table class="table table-striped table-bordered table-condensed" style="width: 80%;margin-left: 10%;text-align: center">
+    <thead style="background-color: #211a1a;color: white">
+    <tr>
+        <th>项目ID</th>
+        <th>项目名称</th>
+        <th>创建者</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for i in project %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.user }}</td>
+            <td>
+                <a href="/mock_list/{{ i.id }}/"><button class="">详情</button></a>
+                <button onclick="javascript:document.location.href='/del_project/{{ i.id }}/'" class="">删除</button>
+            </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# 项目数据 #}
+<script src="/static/lightbox/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/lightbox/js/bootstrap-show-modal.js"></script>
+<script src="/static/lightbox/node_modules/prismjs/prism.js"></script>
+<script>
+    function project_data(){
+            $.showModal({title: "项目数据", body: '<div><table class="table table-striped table-bordered table-condensed">'+
+    '<thead style="background-color: #211a1a;color: white"><tr>'+
+        '<th>'+'项目ID'+'</th>'+
+        '<th>'+'项目名称'+'</th>'+
+         '<th>'+'单元数'+'</th>'+
+        '<th>'+'启动次数'+'</th>'+
+        '<th>'+'mock次数'+'</th></tr></thead><tbody>'+
+        '{% for i in project %}'+
+            '<tr><td>'+'{{ i.id }}'+'</td>'
+               + '<td>'+'{{ i.name }}'+'</td>'
+                + '<td>'+'{{ i.mocks }}'+'</td>'
+               + '<td>'+'{{ i.run_counts }}'+'</td>'
+                +'<td>'+'{{ i.mock_counts }}'+'</td></tr>'+
+        '{% endfor %}'
+    +'</tbody></table><div>'})
+    }
+</script>
+</body>
+</html>

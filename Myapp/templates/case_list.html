@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用例列表</title>
+    <link rel="shortcut icon" href="/static/fv.ico">
+    <link rel="stylesheet" href="/static/lightbox/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/lightbox/node_modules/prismjs/themes/prism-tomorrow.css"/>
+</head>
+<body>
+{% include 'menu.html' %}
+    <table class="table table-striped table-bordered " style="width: 80%;margin-left: 10%;text-align: center;">
+    <thead style="background-color: black;color: white">
+        <tr>
+            <th>ID</th>
+            <th>用例名称</th>
+            <th>body</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for case in cases %}
+            <tr>
+                <td>{{ case.id }}</td>
+                <td>{{ case.name }}</td>
+                <td>{{ case.body }}</td>
+                <td>
+                    <button>运行</button>
+                    <button onclick="set_case('{{ cases.id }}')">设置</button>
+                    <button>删除</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# 新增接口 #}
+<script src="/static/lightbox/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/lightbox/js/bootstrap-show-modal.js"></script>
+<script src="/static/lightbox/node_modules/prismjs/prism.js"></script>
+{# 用例新增 #}
+<script>
+    function add_case(){
+        $.showModal({
+            title: '新增用例',
+            body:
+                '<form><div class="form-group row" >' +
+                '<div class="col-3"><label for="text" class="col-form-label">用例名称</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" id="case_name"></div>' + '</div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Body</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="case_body"></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">断言</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="case_result"></div></div></form>',
+            footer: '<button type="button" class="btn btn-link" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">保存</button>',
+            onCreate: function (modal) {
+                // create event handler for form submit and handle values
+                $(modal.element).on("click", "button[type='submit']", function (event) {
+                    event.preventDefault()
+                    var api_id = {{ apis.id }}
+                    var $form = $(modal.element).find("form")
+                    $.get(
+                        '/add_case/',
+                        {   'api_id': api_id,
+                            'name': $form.find('#case_name').val(),
+                            'body': $form.find('#case_body').val(),
+                            'result': $form.find('#case_result').val(),
+                        },
+                        function (ret){
+                            modal.hide()
+                            document.location.reload()
+                        }
+                    )
+                })
+            }
+        })
+    }
+    function set_case(id){
+        $.showModal({
+            title: '修改用例',
+            body:
+                '<form><div class="form-group row" >' +
+                '<div class="col-3"><label for="text" class="col-form-label">用例名称</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" id="case_name" value="{{ cases.name }}"></div>' + '</div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">Body</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="case_body" value="{{ cases.body }}"></div></div>'+
+                '<div class="form-group row">' +
+                '<div class="col-3"><label for="text" class="col-form-label">'+断言+'</label></div>' +
+                '<div class="col-9"><input type="text" class="form-control" placeholder="" id="case_result" value="{{ cases.body }}"></div></div></form>',
+            footer: '<button type="button" class="btn btn-link" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">保存</button>',
+            onCreate: function (modal) {
+                // create event handler for form submit and handle values
+                $(modal.element).on("click", "button[type='submit']", function (event) {
+                    event.preventDefault()
+                    var id = id
+                    var $form = $(modal.element).find("form")
+                    $.get(
+                        '/set_case/',
+                        {   'api_id': api_id,
+                            'name': $form.find('#case_name').val(),
+                            'body': $form.find('#case_body').val(),
+                            'result': $form.find('#case_result').val(),
+                        },
+                        function (ret){
+                            modal.hide()
+                            document.location.reload()
+                        }
+                    )
+                })
+            }
+        })
+    }
+</script>
+
+</body>
+</html>

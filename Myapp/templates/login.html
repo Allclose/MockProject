@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="shortcut icon" href="/static/fv.ico">
+    <script src="/static/bootstrap-3.4.1-dist/js/jquery-1.11.0.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap-3.4.1-dist/css/bootstrap.min.css">
+    <script src="/static/bootstrap-3.4.1-dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <style>
+        body{
+            background:linear-gradient(to right, #7cc015, #40919a);
+            background: url("/static/login_background.jpg");
+            background-size: 100% 100%;
+            background-attachment: fixed;
+        }
+        .div000{
+            width: 50%;margin-left: 25%;margin-top: 100px;height: 400px;
+            border-radius: 5px;color: white;padding-top: 30px;
+            background: url("/static/login_div.jpg");
+
+            background-size: 100% 100%;
+            background-attachment: fixed;
+        }
+        span{
+            font-size: xx-small;
+        }
+        input{
+            height: 35px;width: 100%;border-radius: 10px;border: 0;
+        }
+        span{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="div000">
+        <ul class="nav nav-tabs" style="padding-left: 35%">
+            <li class="active"  style="color: black">
+                <a href="#IN" data-toggle="tab">SIGN IN</a>
+            </li>
+            <li>
+                <a href="#UP" data-toggle="tab">SIGN UP</a>
+            </li>
+        </ul>
+        <div class="tab-content" style="padding-left: 30px;width: 80%;margin-left: 10%;color: black">
+            <div class="tab-pane active" id="IN">
+                <form action="/sign_in/">
+                    <span>USERNAME:</span>
+                    <input type="text" autocomplete="off" name="in_username">
+                    <br><br>
+                    <span>PASSWORD:</span>
+                    <input data-toggle="tab" type="password" autocomplete="new-password" name="in_password">
+                    <br><br>
+                    <a href="#FORGOT" class="active" data-toggle="tab" style="font-size: xx-small;
+                    float: right;margin-right: 10px;">Forget Password？</a>
+                    <br><br>
+                    <button class="btn-danger" style="border-radius: 10px;width: 100%">SIGN IN</button>
+                    <br><br><br><br><br><br>
+                </form>
+            </div>
+            <div class="tab-pane" id="UP">
+                <form action="/sign_up/">
+                    <span>USERNAME:</span>
+                    <input type="text" autocomplete="off" name="up_username">
+                    <br><br>
+                    <span>PASSWORD:</span>
+                    <input id="up_password" type="password" autocomplete="new-password" name="up_password">
+                    <br><br>
+                    <span>RE-TYPE PASSWORD:</span>
+                    <input id="up_re_password" type="password" autocomplete="new-password" oninput="check_pwd()">
+                    <br><br>
+                    <span>EMAIL:</span>
+                    <input type="up_email" autocomplete="off" name="up_email">
+                    <br><br>
+                    <button id="sign_up" disabled class="btn-danger" style="border-radius: 10px;width: 100%">SIGN UP</button>
+                    <br>
+                </form>
+            </div>
+            <div class="tab-pane" id="FORGOT">
+                <form action="/reset_password/">
+                    <span>username which your username</span>
+                    <input id="fg_username" type="text" autocomplete="off" name="fg_username">
+                    <br><br>
+                    <span>new password</span>
+                    <input type="text" autocomplete="new-password" name="fg_password">
+                    <br><br>
+                    <span>your email's code</span>
+                    <button onclick="send_email()" type="button" style="color: black">send email</button>
+                    <input type="email" autocomplete="off" name="fg_code">
+                    <br><br>
+                    <a><button>reset</button></a>
+                    <button><a href="#IN" type="button" data-toggle="tab" class="active" >Cancel</a></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        //注册时两次密码一致性确定
+        function check_pwd(){
+            var password = document.getElementById('up_password').value;
+            var re_password = document.getElementById('up_re_password').value;
+            if(password != re_password){
+                document.getElementById('sign_up').disabled = true;
+            }
+            else {
+                document.getElementById('sign_up').disabled = false;
+            }
+        }
+    </script>
+    <script>
+        function send_email(){
+            $.get(
+                "/send_email_pwd/",
+                {
+                    "username":document.getElementById('fg_username').value
+                },
+                function (ret){
+                    if (ret == 'yes'){
+                        alert('发送成功')
+                    }
+                    else {
+                        alert('发送失败')
+                    }
+                }
+            )
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单</title>
+    <link rel="shortcut icon" href="/static/fv.ico">
+    {# menu #}
+	<link rel="stylesheet" type="text/css" href="/static/menu/css/reset.css">
+	{#  <link rel="stylesheet" type="text/css" href="/static/menu/css/default.css">#}
+	<link rel='stylesheet' href='/static/font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css'>
+	<link rel="stylesheet" type="text/css" href="/static/menu/css/styles.css">
+
+</head>
+<body>
+    <div id="top-bar" class="top-bar">
+		  <div class="bar">
+		    <button id="navbox-trigger" class="navbox-trigger"><i class="fa fa-lg fa-th"></i></button>
+            <strong><span style="color: white">{{ page_name }}</span></strong>
+              &nbsp;<strong><span id="project_state" style="color: white">{{ project_state }}</span></strong>
+              {# 通过项目状态来判断对应颜色 #}
+              <script>
+                  if ('{{ project_state }}'.indexOf('True') == -1){
+                      document.getElementById('project_state').style.color = 'red'
+                  }else {document.getElementById('project_state').style.color = 'green'}
+              </script>
+		  </div>
+		  <div class="navbox">
+		    <div class="navbox-tiles">
+			    <a href="/project_list/" class="tile">
+			        <div class="icon"><i class="fa fa-home" style="text-align: center"></i></div><span class="title">首页</span>
+			    </a>
+                <a href="/api_list/" class="tile">
+			        <div class="icon"><i class="fa fa-home" style="text-align: center"></i></div><span class="title">接口列表</span>
+			    </a>
+			    <a href="/admin/" class="tile">
+			        <div class="icon"><i class="fa fa-user"></i></div><span class="title">后台</span>
+			    </a>
+			    <a href="/logout/" class="tile">
+			        <div class="icon"><i class="fa fa-sign-out"></i></div><span class="title">注销</span>
+			    </a>
+                {# 展示各页面内的所有按钮 #}
+                {% for i in buttons %}
+                    <a href="{{ i.href }}" class="tile">
+			            <div class="icon"><i class="fa fa-{{ i.icon }}"></i></div><span class="title">{{ i.name }}</span>
+			        </a>
+                {% endfor %}
+		    </div>
+		  </div>
+	</div>
+    <script src="/static/bootstrap-3.4.1-dist/js/jquery-2.1.1.min.js"></script>
+	<script>
+	(function () {
+	    $(document).ready(function () {
+	        $('#navbox-trigger').click(function () {
+	            return $('#top-bar').toggleClass('navbox-open');
+	        });
+	        return $(document).on('click', function (e) {
+	            var $target;
+	            $target = $(e.target);
+	            if (!$target.closest('.navbox').length && !$target.closest('#navbox-trigger').length) {
+	                return $('#top-bar').removeClass('navbox-open');
+	            }
+	        });
+	    });
+	}.call(this));
+	</script>
+</body>
+</html>

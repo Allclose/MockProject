@@ -1,0 +1,13 @@
+22.2.21：开始整合开发接口自动化功能，现已跑通基础流程
+        待调整功能：用例的读取和保存，用例脚本伴随接口新增，报告的更新，用例的更新，用例文件的上传
+22.2.22:用例使用readExcel进行读取，保存在对应接口的testcases字段内，每次上传用例会覆盖之前的用例
+        文件上传和保存：前端<form class="" action="/add_case/'+api_id+'/" method="post" enctype="multipart/form-data">
+                        后端读取：cases = xlrd.open_workbook(filename=None, file_contents=request.FILES['excel_data'].read())
+        接口测试运行流程开发完毕，
+            discover = unittest.defaultTestLoader.discover(start_dir=case_dir,pattern='test_'+api_id+'_testcase.py',top_level_dir=None)
+            suite.addTest(test_name)
+            fp = open(report_path,'wb')
+            runner = HTMLTestRunner.HTMLTestRunner(stream=fp,title='测试报告').run(suite)
+22.2.23：用例脚本伴随接口新增shutil.copy(demo_case,new_case)
+        脚本伴随删除及设置功能开发完毕，页面所有操作功能开发结束
+        后续补充用例模板下载功能
